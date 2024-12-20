@@ -7,7 +7,7 @@ defmodule AuthApi.Repo.Migrations.CreateUsers do
       add :lastname, :string, null: false
       add :email, :string, null: false
       add :username, :string, null: false
-      add :unique, :string, null: false
+      add :unique, :string, null: true
       add :password, :string, null: false
 
       timestamps(type: :utc_datetime)

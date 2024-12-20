@@ -3,7 +3,6 @@ defmodule AuthApi.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :unique, :string
     field :username, :string
     field :password, :string
     field :firstname, :string
@@ -16,8 +15,25 @@ defmodule AuthApi.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:firstname, :lastname, :email, :username, :unique, :password])
-    |> validate_required([:firstname, :lastname, :email, :username, :unique, :password])
+    |> cast(attrs, [:firstname, :lastname, :email, :username,  :password])
+    |> validate_required([:firstname, :lastname, :email, :username,  :password])
     |> unique_constraint(:email)
+  end
+
+
+  def registration_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:firstname, :lastname, :email, :username, :password])
+    |> validate_required([:firstname, :lastname, :email, :username, :password])
+    |> unique_constraint(:email)
+    |> hash_password()
+  end
+
+
+  defp hash_password(user) do
+    with password <- fetch_field!(user, :password) do
+      encrypted_password = Bcrypt.Base.hash_password(password, Bcrypt.gen_salt(12,true))
+      put_change(user,:password, encrypted_password)
+    end
   end
 end
